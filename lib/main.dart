@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:one_context/one_context.dart';
 import 'package:sp_util/sp_util.dart';
 import 'package:throw_object_detection_flutter/ui/main_page.dart';
 
@@ -15,6 +16,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
+      builder: OneContext().builder,
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),

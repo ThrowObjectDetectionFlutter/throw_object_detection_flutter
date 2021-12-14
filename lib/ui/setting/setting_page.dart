@@ -49,25 +49,44 @@ class _SettingPage extends StatelessWidget {
                     const Text("指定 Python 解释器的路径，如未设置则使用环境变量中的 Python",
                         style:
                             TextStyle(fontSize: 14, color: Color(0xFF858585))),
-                    context.watch<SettingModel>().pythonPath != null
-                        ? Text(context.read<SettingModel>().pythonPath!)
-                        : const Text("未设置"),
+
+                    /// 点击之后切换到编辑模式
+                    if (context.watch<SettingModel>().isEditMode)
+                      TextField(
+                        controller: TextEditingController(
+                            text: context.watch<SettingModel>().pythonPath ??
+                                "未设置"),
+                      )
+                    else
+                      GestureDetector(
+                        onTap: () {
+                          context.read<SettingModel>().isEditMode = true;
+                        },
+                        child: context.watch<SettingModel>().pythonPath != null
+                            ? Text(context.read<SettingModel>().pythonPath!)
+                            : const Text("未设置"),
+                      )
                   ],
                 ),
                 const SizedBox(width: 32),
                 OutlinedButton(
                   onPressed: () async {
-                    FilePickerResult? result =
-                        await FilePicker.platform.pickFiles(
-                      type: FileType.custom,
-                      allowedExtensions: ['exe'],
-                    );
-                    if (result != null) {
-                      context.read<SettingModel>().pythonPath =
-                          result.files.single.path;
+                    if (context.watch<SettingModel>().isEditMode) {
+                      context.read<SettingModel>().pythonPath = "";
+                    } else {
+                      FilePickerResult? result =
+                          await FilePicker.platform.pickFiles(
+                        type: FileType.custom,
+                        allowedExtensions: ['exe'],
+                      );
+                      if (result != null) {
+                        context.read<SettingModel>().pythonPath =
+                            result.files.single.path;
+                      }
                     }
                   },
-                  child: const Text("选择文件"),
+                  child: Text(
+                      context.watch<SettingModel>().isEditMode ? "保存" : "选择文件"),
                 )
               ],
             ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:throw_object_detection_flutter/generated/assets.dart';
+import 'package:throw_object_detection_flutter/repo/shell_repo.dart';
 import 'package:throw_object_detection_flutter/ui/home/home_model.dart';
 
 class HomePageWrapper extends StatelessWidget {
@@ -37,7 +38,15 @@ class _HomePage extends StatelessWidget {
             const SizedBox(
               height: 23,
             ),
-            ElevatedButton(onPressed: () {}, child: const Text('开始使用'))
+            ElevatedButton(
+                onPressed: () {
+                  ShellRepo().getShellOutput(
+                      "C:\\Users\\nihaocun\\scoop\\apps\\python\\current\\python.exe -u c:\\Users\\nihaocun\\Code\\Python\\index.py",
+                      onProcess: (progress) {
+                        print(progress);
+                      });
+                },
+                child: const Text('开始使用'))
           ],
         ),
         Image.asset(

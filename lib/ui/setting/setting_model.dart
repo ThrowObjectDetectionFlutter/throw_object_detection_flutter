@@ -11,4 +11,11 @@ class SettingModel with ChangeNotifier {
     SettingRepo().savePythonPath(value!);
     notifyListeners();
   }
+
+  bool _isEditMode = false;
+  bool get isEditMode => _isEditMode;
+  set isEditMode(bool value) {
+    _isEditMode = value;
+    notifyListeners();
+  }
 }
