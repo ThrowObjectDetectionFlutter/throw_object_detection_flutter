@@ -1,22 +1,29 @@
 import 'package:flutter/material.dart';
+import 'dart:math' as math;
 import 'package:provider/provider.dart';
 import 'package:throw_object_detection_flutter/data/constans.dart';
 import 'package:throw_object_detection_flutter/ui/home/home_page.dart';
+import 'package:throw_object_detection_flutter/ui/label/label_page.dart';
 import 'package:throw_object_detection_flutter/ui/main_model.dart';
 import 'package:throw_object_detection_flutter/ui/setting/setting_page.dart';
+
+import '../data/event.dart';
+import '../util/event_bus.dart';
+import 'anim/slide_transition.dart';
 
 class MainWrapper extends StatelessWidget {
   const MainWrapper({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-        create: (context) => MainModel(), child: const _MainPage());
+    return MultiProvider(providers: [
+      ChangeNotifierProvider(create: (context) => MainModel()),
+    ], child: _MainPage(context));
   }
 }
 
 class _MainPage extends StatelessWidget {
-  const _MainPage({Key? key}) : super(key: key);
+  const _MainPage(BuildContext context, {Key? key}) : super(key: key);
 
   Widget _buildMenuList(BuildContext context) {
     return Column(
@@ -47,10 +54,10 @@ class _MainPage extends StatelessWidget {
         ListTile(
           leading: const Icon(Icons.edit_outlined),
           title: const Text('标注'),
-          selected:
-              context.watch<MainModel>().currentIndex == Constant.page2Index,
+          selected: context.watch<MainModel>().currentIndex ==
+              Constant.labelPageIndex,
           onTap: () {
-            context.read<MainModel>().currentIndex = Constant.page2Index;
+            context.read<MainModel>().currentIndex = Constant.labelPageIndex;
           },
         ),
         ListTile(
@@ -85,20 +92,63 @@ class _MainPage extends StatelessWidget {
     );
   }
 
+  Widget _buildSetupButton(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          OutlinedButton.icon(
+              onPressed: () {
+                if (context.read<MainModel>().currentIndex !=
+                    Constant.homePageIndex) {
+                  eventBus.fire(PageChangeEvent(
+                      context.read<MainModel>().currentIndex, false));
+                }
+              },
+              icon: Icon(
+                Icons.arrow_back_ios_outlined,
+                color: context.watch<MainModel>().currentIndex ==
+                        Constant.homePageIndex
+                    ? const Color(0xff777777)
+                    : const Color(0xff333333),
+              ),
+              label: const Text('')),
+          const SizedBox(width: 8),
+          OutlinedButton.icon(
+              onPressed: () {
+                if (context.read<MainModel>().currentIndex != 999) {
+                  eventBus.fire(PageChangeEvent(
+                      context.read<MainModel>().currentIndex, true));
+                }
+              },
+              icon: Transform.rotate(
+                angle: math.pi,
+                child: const Icon(
+                  Icons.arrow_back_ios_outlined,
+                  color: Color(0xff333333),
+                ),
+              ),
+              label: const Text(''))
+        ],
+      ),
+    );
+  }
+
   Widget _buildContentPage(BuildContext context) {
     switch (context.watch<MainModel>().currentIndex) {
       case 0:
-        return const HomePageWrapper();
+        return HomePageWrapper(key: ValueKey(Constant.homePageIndex));
       case 1:
-        return Container();
+        return LabelPageWrapper(key: ValueKey(Constant.labelPageIndex));
       case 2:
-        return Container();
+        return Container(key: ValueKey(Constant.page3Index));
       case 3:
-        return Container();
+        return Container(key: ValueKey(Constant.page4Index));
       case 4:
-        return const SettingPageWrapper();
+        return SettingPageWrapper(key: ValueKey(Constant.settingPageIndex));
       default:
-        return Container();
+        return Container(key: ValueKey(Constant.page4Index));
     }
   }
 
@@ -115,7 +165,37 @@ class _MainPage extends StatelessWidget {
             width: 2,
             thickness: 1,
           ),
-          SingleChildScrollView(child: _buildContentPage(context)),
+          SizedBox(
+            width: MediaQuery.of(context).size.width -
+                (MediaQuery.of(context).size.width > 768 ? 302 : 2),
+            height: MediaQuery.of(context).size.height,
+            child: Stack(children: [
+              SingleChildScrollView(
+                  child: AnimatedSwitcher(
+                      transitionBuilder:
+                          (Widget child, Animation<double> animation) {
+                        return SlideTransitionX(
+                          child: child,
+                          direction: context.read<MainModel>().isToNextPage
+                              ? AxisDirection.up
+                              : AxisDirection.down,
+                          position: animation,
+                        );
+                      },
+                      duration: const Duration(milliseconds: 350),
+                      child: _buildContentPage(context))),
+              const Positioned(
+                child: Icon(Icons.home_outlined),
+                left: 16,
+                bottom: 16,
+              ),
+              Positioned(
+                child: _buildSetupButton(context),
+                right: 0,
+                bottom: 0,
+              )
+            ]),
+          ),
         ],
       ),
       drawer: MediaQuery.of(context).size.width < 768

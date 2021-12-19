@@ -1,25 +1,24 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:throw_object_detection_flutter/generated/assets.dart';
-import 'package:throw_object_detection_flutter/ui/home/home_model.dart';
+import 'package:throw_object_detection_flutter/ui/main_model.dart';
 
-import '../main_model.dart';
+import '../../generated/assets.dart';
+import 'label_model.dart';
 
-class HomePageWrapper extends StatelessWidget {
-  const HomePageWrapper({Key? key}) : super(key: key);
+class LabelPageWrapper extends StatelessWidget {
+  const LabelPageWrapper({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return MultiProvider(providers: [
-      ChangeNotifierProvider<HomeModel>(create: (_) => HomeModel()),
+      ChangeNotifierProvider<LabelModel>(create: (_) => LabelModel()),
       ChangeNotifierProvider<MainModel>(create: (_) => MainModel()),
-    ], child: const _HomePage());
+    ], child: const _LabelPage());
   }
 }
 
-class _HomePage extends StatelessWidget {
-  const _HomePage({Key? key}) : super(key: key);
+class _LabelPage extends StatelessWidget {
+  const _LabelPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -31,21 +30,23 @@ class _HomePage extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text(
-                '欢迎使用',
-                style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold),
+              Text(
+                context.watch<LabelModel>().title,
+                style:
+                    const TextStyle(fontSize: 36, fontWeight: FontWeight.bold),
               ),
               const SizedBox(
                 height: 23,
               ),
-              const Text(
-                '高空抛物检测系统',
-                style: TextStyle(fontSize: 22),
+              Text(
+                context.watch<LabelModel>().content,
+                style: const TextStyle(fontSize: 22),
               ),
               const SizedBox(
                 height: 23,
               ),
-              ElevatedButton(onPressed: () {}, child: const Text('开始使用'))
+              ElevatedButton(
+                  onPressed: () {}, child: const Text('打开 LabelImage'))
             ],
           ),
         ),
@@ -56,7 +57,7 @@ class _HomePage extends StatelessWidget {
           child: Align(
             alignment: Alignment.center,
             child: Image.asset(
-              Assets.image1,
+              context.watch<LabelModel>().image,
               width: 516,
               height: 475,
             ),
