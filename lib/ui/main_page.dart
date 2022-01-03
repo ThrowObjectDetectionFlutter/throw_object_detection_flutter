@@ -6,6 +6,7 @@ import 'package:throw_object_detection_flutter/ui/home/home_page.dart';
 import 'package:throw_object_detection_flutter/ui/label/label_page.dart';
 import 'package:throw_object_detection_flutter/ui/main_model.dart';
 import 'package:throw_object_detection_flutter/ui/setting/setting_page.dart';
+import 'package:throw_object_detection_flutter/ui/trained/trained_page.dart';
 
 import '../data/event.dart';
 import '../util/event_bus.dart';
@@ -63,10 +64,10 @@ class _MainPage extends StatelessWidget {
         ListTile(
           leading: const Icon(Icons.bookmark),
           title: const Text('训练'),
-          selected:
-              context.watch<MainModel>().currentIndex == Constant.page3Index,
+          selected: context.watch<MainModel>().currentIndex ==
+              Constant.trainedPageIndex,
           onTap: () {
-            context.read<MainModel>().currentIndex = Constant.page3Index;
+            context.read<MainModel>().currentIndex = Constant.trainedPageIndex;
           },
         ),
         ListTile(
@@ -142,7 +143,7 @@ class _MainPage extends StatelessWidget {
       case 1:
         return LabelPageWrapper(key: ValueKey(Constant.labelPageIndex));
       case 2:
-        return Container(key: ValueKey(Constant.page3Index));
+        return TrainedPageWrapper(key: ValueKey(Constant.trainedPageIndex));
       case 3:
         return Container(key: ValueKey(Constant.page4Index));
       case 4:

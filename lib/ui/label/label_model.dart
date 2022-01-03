@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:throw_object_detection_flutter/generated/assets.dart';
 
@@ -6,8 +8,11 @@ import '../../data/event.dart';
 import '../../util/event_bus.dart';
 
 class LabelModel extends ChangeNotifier {
+
+  late StreamSubscription<PageChangeEvent> bus;
+
   LabelModel() {
-    eventBus.on<PageChangeEvent>().listen((event) {
+    bus = eventBus.on<PageChangeEvent>().listen((event) {
       if (event.pageCount != Constant.labelPageIndex) {
         return;
       }
@@ -20,7 +25,7 @@ class LabelModel extends ChangeNotifier {
 
       /// 第四页就要跳转下一个页面了
       if (event.isToNext && labelIndex == 3) {
-        eventBus.fire(ChangeMainModel(Constant.page3Index));
+        eventBus.fire(ChangeMainModel(Constant.trainedPageIndex));
         labelIndex = 0;
         return;
       }
@@ -32,6 +37,13 @@ class LabelModel extends ChangeNotifier {
         labelIndex--;
       }
     });
+  }
+
+
+  @override
+  void dispose() {
+    super.dispose();
+    bus.cancel();
   }
 
   int _labelIndex = 0;

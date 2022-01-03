@@ -29,6 +29,8 @@ class MainModel with ChangeNotifier {
 
   int get currentIndex => _currentIndex;
 
+  Future<int> get currentIndexFuture => Future.value(_currentIndex);
+
   set currentIndex(int value) {
     if (_currentIndex < value) {
       _isToNextPage = true;

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:throw_object_detection_flutter/ui/main_model.dart';
 
-import '../../generated/assets.dart';
 import 'label_model.dart';
 
 class LabelPageWrapper extends StatelessWidget {
